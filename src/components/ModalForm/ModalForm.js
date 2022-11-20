@@ -1,12 +1,14 @@
 import React from "react";
 
 import ReactModal from "react-modal";
+import { ToastContainer, toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import cn from "classnames";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import styles from "./ModalForm.module.scss";
+import "react-toastify/dist/ReactToastify.css";
 
 const ModalForm = ({ switchModalForm, isModalForm }) => {
   const schema = yup.object({
@@ -22,11 +24,11 @@ const ModalForm = ({ switchModalForm, isModalForm }) => {
       .required("Required"),
     email: yup.string().email("Invalid email").required("Required"),
     age: yup
-      .number()
+      .number("must be a number")
       .min(18, "You so young!")
       .max(100, "You so old!")
       .integer()
-      .required(),
+      .required("Required"),
   });
 
   const {
@@ -34,6 +36,12 @@ const ModalForm = ({ switchModalForm, isModalForm }) => {
     handleSubmit,
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
+
+  const showToastMessage = () => {
+    toast.success('Success Addition !', {
+      position: toast.POSITION.BOTTOM_RIGHT
+    });
+  };
 
   return (
     <ReactModal
@@ -125,9 +133,15 @@ const ModalForm = ({ switchModalForm, isModalForm }) => {
             className={cn("ms-2", styles.buttonSend)}
             type="submit"
             value="add"
+            onClick={() => {
+              Object.keys(errors).length === 0 && showToastMessage();
+              console.log(Object.keys(errors).length)
+            }
+            }
           />
         </div>
       </form>
+      <ToastContainer/>
     </ReactModal>
   );
 };
